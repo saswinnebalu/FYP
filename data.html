@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Simple XOR Encryption/Decryption</title>
+</head>
+<body>
+    <h1>Simple XOR Encryption/Decryption</h1>
+    <form id="encryptionForm">
+        <label for="encryptionText">Enter the text to be Encrypted:</label><br>
+        <textarea id="encryptionText" rows="4" cols="50"></textarea><br>
+
+        <label for="encryptionKey">Enter the custom secret key:</label><br>
+        <input type="text" id="encryptionKey"><br>
+
+        <button type="button" onclick="encryptText()">Encrypt</button>
+    </form>
+
+    <form id="decryptionForm">
+        <label for="decryptionText">Enter the encrypted text to Decrypt:</label><br>
+        <textarea id="decryptionText" rows="4" cols="50"></textarea><br>
+
+        <label for="decryptionKey">Enter the custom secret key (the same key used during encryption):</label><br>
+        <input type="text" id="decryptionKey"><br>
+
+        <button type="button" onclick="decryptText()">Decrypt</button>
+    </form>
+
+    <div id="result"></div>
+
+    <a id="downloadEncryptedLink" style="display:none;">Download Encrypted Text</a>
+    <a id="downloadDecryptedLink" style="display:none;">Download Decrypted Text</a>
+
+    <script>
+        let allEncryptedText = "";
+        let allDecryptedText = "";
+
+        function encryptText() {
+            const text = document.getElementById("encryptionText").value;
+            const key = document.getElementById("encryptionKey").value;
+            const encryptedText = encrypt(text, key);
+            allEncryptedText += encryptedText + "\n";
+            document.getElementById("result").innerHTML = "<h2>Encrypted Text:</h2><p>" + encryptedText + "</p>";
+
+            // Create a Blob with the entire encrypted text
+            const encryptedBlob = new Blob([allEncryptedText], { type: 'text/plain' });
+            const encryptedUrl = URL.createObjectURL(encryptedBlob);
+
+            // Provide a download link for the encrypted text
+            const downloadEncryptedLink = document.getElementById("downloadEncryptedLink");
+            downloadEncryptedLink.href = encryptedUrl;
+            downloadEncryptedLink.download = "encrypted_output.txt";
+            downloadEncryptedLink.style.display = "block";
+        }
+
+        function decryptText() {
+            const text = document.getElementById("decryptionText").value;
+            const key = document.getElementById("decryptionKey").value;
+            const decryptedText = decrypt(text, key);
+            allDecryptedText = decryptedText + "\n"; // Reset decrypted text
+            document.getElementById("result").innerHTML = "<h2>Decrypted Text:</h2><p>" + decryptedText + "</p>";
+
+            // Create a Blob with the entire decrypted text
+            const decryptedBlob = new Blob([allDecryptedText], { type: 'text/plain' });
+            const decryptedUrl = URL.createObjectURL(decryptedBlob);
+
+            // Provide a download link for the decrypted text
+            const downloadDecryptedLink = document.getElementById("downloadDecryptedLink");
+            downloadDecryptedLink.href = decryptedUrl;
+            downloadDecryptedLink.download = "decrypted_output.txt";
+            downloadDecryptedLink.style.display = "block";
+        }
+
+        function encrypt(text, key) {
+            let encryptedText = '';
+            for (let i = 0; i < text.length; ++i) {
+                encryptedText += String.fromCharCode(text.charCodeAt(i) ^ key.charCodeAt(i % key.length));
+            }
+            return encryptedText;
+        }
+
+        function decrypt(text, key) {
+            let decryptedText = '';
+            for (let i = 0; i < text.length; ++i) {
+                decryptedText += String.fromCharCode(text.charCodeAt(i) ^ key.charCodeAt(i % key.length));
+            }
+            return decryptedText;
+        }
+    </script>
+</body>
+</html>
